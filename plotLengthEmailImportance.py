@@ -10,7 +10,6 @@ lengths=[]
 plt.clf()
     
 messages=messages.getMessages()
-#print 'length mess: ', type(messages)
 importance=[10,10,0,4,4,3,3,0,6,1]
     
 def plot_LengthV_Importance():
@@ -58,23 +57,15 @@ def getSentiment():
     return (tones, importances)
     
 def ridgeFit():
-    y = [2,3,4,5,6]
-    x = [3,4,5,6,7]
-    y=np.array(y)
-    x=np.array(x)
+    y = [[2,3],[3,4]]
+    x = np.array([[3],[6]])
     print 'x1: ', x
     clf = sklearn.linear_model.Ridge(alpha=1.0)
-    X=([3,4],3)
-    Y=([2,4],3)
-    clf.fit(X,Y,sample_weight=None)
-#    for X in x:
-#        for Y in y:
-#            print 'x is: ', X
-#            clf.fit(X,Y,sample_weight=None)
-#    sklearn.linear_model.
+    clf.fit(x,y,sample_weight=None)
+    return clf
 
 if __name__=='__main__':
     #plot_LengthV_Importance()
     #getSentiment()
-    ridgeFit()
+    print 'ridge fit: ',ridgeFit()
 
