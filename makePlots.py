@@ -21,11 +21,9 @@ def plot_LengthV_Importance():
         importances.append(averageImportance)
         lengths.append(len(words))
     lengthOfMessages_VsImportance=plt.scatter(lengths, importances, s=50, alpha=0.5)
-#    print 'lengths: ', len(lengths), 'len 2: ', len(importances)
     m, b = np.polyfit(lengths, importances, 1)
-    print len(((m*lengths) + b))
-    
-#    plt.plot(lengths, ((m*lengths) + b), '-')
+    lengths = np.array(lengths)    
+    plt.plot(lengths, ((m*lengths) + b), '-')
     
     plt.xlabel('Length of message',fontsize=18)
     plt.ylabel('Importance of message', fontsize=18)
