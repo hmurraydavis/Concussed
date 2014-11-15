@@ -6,6 +6,9 @@ from apiclient.discovery import build
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.file import Storage
 from oauth2client.tools import run
+import base64
+import email
+from apiclient import errors
 
 
 # Path to the client_secret.json file downloaded from the Developer Console
@@ -40,3 +43,10 @@ threads = gmail_service.users().threads().list(userId='me').execute()
 if threads['threads']:
   for thread in threads['threads']:
     print 'Thread ID: %s' % (thread['id'])
+    message = gmail_service.users().messages().get(userId='hmurraydavis@gmail.com',
+    id=thread['id'], format='raw').execute()
+    print message
+    
+if __name__=='__main__':
+    print 'hi'
+#    ListMessagesWithLabels()
