@@ -14,18 +14,20 @@ def getTones():
     tones = []
     for messageGroup in messages:
         messageBody=messageGroup[1]
-        (tone, subjectivity) = pattern.en.sentiment(messageBody)
+        tone = getTone(messageBody)
         tones.append(tone)
     return np.array(tones)
 
-def getSubjectivity():
+
+def getSubjectivities():
     subjectivities = []
     for messageGroup in messages:
         messageBody=messageGroup[1]
-        (tone, subjectivity) = pattern.en.sentiment(messageBody)
+        subjectivity = getSentiment(messageBody)
         subjectivities.append(subjectivity)
     return np.array(subjectivities)
     
+
 def getImportances():
     importances = []
     for messageGroup in messages:
@@ -33,21 +35,43 @@ def getImportances():
         averageImportance=sum(importanceThisMessage)/len(importanceThisMessage)
         importances.append(averageImportance)
     return np.array(importances)
+
+
+def getLength(message):
+    words=message.split(' ')
+    return len(words)
     
+    
+def getTone(message):
+    (tone, subjectivity) = pattern.en.sentiment(message)
+    return tone
+    
+    
+def getSentiment(message):
+    (tone, subjectivity) = pattern.en.sentiment(message)
+    return subjectivity
+    
+
 def getLengths():
     lengths = []
     for messageGroup in messages:
         messageBody=messageGroup[1]
-        words=messageBody.split(' ')
-        lengths.append(len(words))
+        lengths.append(getLength(messageBody))
     return np.array(lengths)
+    
     
 def makeTrainingVector():
     lengths = getLengths()
     tones = getTones()
-    subjectivities = getSubjectivity()
-    trainingVector = zip(lengths, tones)
+    subjectivities = getSubjectivities()
+    trainingVector = zip(lengths, tones, subjectivities)
     return trainingVector
+
+def provessNewEmail():
+    email = "The cat is new and really cool. Im enjoying her. Love, Mom."
+    length = getLength(email)
+#    trainingVector = zip(length, tones)
+
     
 def runAIFitting():
     trainingVector = makeTrainingVector()
