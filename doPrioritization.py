@@ -110,16 +110,17 @@ def saveTrainingData(saveTrainingDataFile):
         pickle.dump(trainingDataFound, f)
             
 
-def loadTrainingData(saveTrainingDataFile):
+def loadTrainingData(saveTrainingDataFile,exampleInputMessage):
     with open(saveTrainingDataFile, 'r') as f:
         clf = pickle.load(f)
-    
+    tupleMessageData=processNewEmail(exampleInputMessage)
+    clf.predict((2,3,4))
 
 if __name__=='__main__':
 #    runSVM()
     saveTrainingDataFile = 'trainingData'
-    saveTrainingData(saveTrainingDataFile)
-    loadTrainingData(saveTrainingDataFile)
     exampleInputMessage = 'Hi, its mom. I love you.'
+    saveTrainingData(saveTrainingDataFile)
+    loadTrainingData(saveTrainingDataFile,exampleInputMessage)
 #    pprint.pprint(type(makeTrainingVector()[0]))
     print processNewEmail(exampleInputMessage)
