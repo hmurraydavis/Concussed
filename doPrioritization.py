@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import pattern.en
 import messages
 import sklearn.linear_model 
+from sklearn import svm
 import sklearn.svm
+import pickle
 
 messages=messages.getMessages()
 
@@ -86,16 +88,22 @@ def runAIFitting():
     return clf
     
 def runSVM():
-    from sklearn import svm
     X = [[0, 0], [1, 1]]
     y = [0, 1]
     trainingVector = makeTrainingVector()
     importances = getImportances()
     clf = svm.SVC()
     clf.fit(trainingVector, importances)  
-    svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, degree=3,
+    trainingDataFound = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, degree=3,
     gamma=0.0, kernel='rbf', max_iter=-1, probability=False, random_state=None,
     shrinking=True, tol=0.001, verbose=False)
+    return trainingDataFound
+    
+    
+def saveTrainingData():
+    trainingDataFound = runSVM()
+    with open('trainingData', 'w') as f:
+            pickle.dump(trainingDataFound, f)
 
 if __name__=='__main__':
     #print 'tone: ', getTones()
@@ -103,4 +111,5 @@ if __name__=='__main__':
     #print 'length is: ', getLengths()
     #print 'trainging vector: ', makeTrainingVector()
 #    print 'ridge: ', runAIFitting()
-    runSVM()
+#    runSVM()
+    saveTrainingData()
