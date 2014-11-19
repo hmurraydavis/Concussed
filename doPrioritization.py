@@ -101,7 +101,7 @@ def runSVM():
     trainingDataFound = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, degree=3,
     gamma=0.0, kernel='rbf', max_iter=-1, probability=False, random_state=None,
     shrinking=True, tol=0.001, verbose=False)
-    return trainingDataFound
+    return clf
     
     
 def saveTrainingData(saveTrainingDataFile):
@@ -114,13 +114,14 @@ def loadTrainingData(saveTrainingDataFile,exampleInputMessage):
     with open(saveTrainingDataFile, 'r') as f:
         clf = pickle.load(f)
     tupleMessageData=processNewEmail(exampleInputMessage)
-    clf.predict((2,3,4))
+    return clf.predict(tupleMessageData)
+
 
 if __name__=='__main__':
 #    runSVM()
     saveTrainingDataFile = 'trainingData'
     exampleInputMessage = 'Hi, its mom. I love you.'
     saveTrainingData(saveTrainingDataFile)
-    loadTrainingData(saveTrainingDataFile,exampleInputMessage)
+    print 'saved ', loadTrainingData(saveTrainingDataFile,exampleInputMessage)
 #    pprint.pprint(type(makeTrainingVector()[0]))
-    print processNewEmail(exampleInputMessage)
+#    print processNewEmail(exampleInputMessage)
