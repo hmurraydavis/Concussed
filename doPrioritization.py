@@ -8,6 +8,7 @@ import sklearn.linear_model
 from sklearn import svm
 import sklearn.svm
 import pickle
+import pprint
 
 messages=messages.getMessages()
 
@@ -69,10 +70,13 @@ def makeTrainingVector():
     trainingVector = zip(lengths, tones, subjectivities)
     return trainingVector
 
-def provessNewEmail():
+def processNewEmail(email):
     email = "The cat is new and really cool. Im enjoying her. Love, Mom."
     length = getLength(email)
-#    trainingVector = zip(length, tones)
+    tone = getTone(email)
+    subjectivity = getSentiment(email)
+    trainingVector = (length, tone, subjectivity)
+    return trainingVector
 
     
 def runAIFitting():
@@ -100,16 +104,22 @@ def runSVM():
     return trainingDataFound
     
     
-def saveTrainingData():
+def saveTrainingData(saveTrainingDataFile):
     trainingDataFound = runSVM()
-    with open('trainingData', 'w') as f:
-            pickle.dump(trainingDataFound, f)
+    with open(saveTrainingDataFile, 'w') as f:
+        pickle.dump(trainingDataFound, f)
+            
+
+def loadTrainingData(saveTrainingDataFile):
+    with open(saveTrainingDataFile, 'r') as f:
+        clf = pickle.load(f)
+    
 
 if __name__=='__main__':
-    #print 'tone: ', getTones()
-    #print 'import: ', getImportances()
-    #print 'length is: ', getLengths()
-    #print 'trainging vector: ', makeTrainingVector()
-#    print 'ridge: ', runAIFitting()
 #    runSVM()
-    saveTrainingData()
+    saveTrainingDataFile = 'trainingData'
+    saveTrainingData(saveTrainingDataFile)
+    loadTrainingData(saveTrainingDataFile)
+    exampleInputMessage = 'Hi, its mom. I love you.'
+#    pprint.pprint(type(makeTrainingVector()[0]))
+    print processNewEmail(exampleInputMessage)
