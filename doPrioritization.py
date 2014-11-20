@@ -3,14 +3,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pattern.en
-import messages
+import messages as ms
 import sklearn.linear_model 
 from sklearn import svm
 import sklearn.svm
 import pickle
 import pprint
+import Queue
 
-messages=messages.getMessages()
+messages=ms.getMessages()
+prioritizedEmails = Queue.PriorityQueue()
 
 def getTones():
     '''Find the tone of all messages. '''
@@ -83,7 +85,6 @@ def runAIFitting():
     trainingVector = makeTrainingVector()
     importances = getImportances()
     C = 1.0  # SVM regularization parameter
-    
 #    clf = sklearn.linear_model.Ridge(alpha=1.0)
     trainingVector = np.array(trainingVector)
     print importances
@@ -110,11 +111,22 @@ def saveTrainingData(saveTrainingDataFile):
         pickle.dump(trainingDataFound, f)
             
 
-def loadTrainingData(saveTrainingDataFile,exampleInputMessage):
+def prioritizeSingleEmail(saveTrainingDataFile,exampleInputMessage):
+    global prioritizedEmails
     with open(saveTrainingDataFile, 'r') as f:
         clf = pickle.load(f)
     tupleMessageData=processNewEmail(exampleInputMessage)
-    return clf.predict(tupleMessageData)
+    importanceMessage = -1*clf.predict(tupleMessageData)
+    prioritizedEmails.put( (importanceMessage, exampleInputMessage)) 
+    print prioritizedEmails.get()
+    return prioritizedEmails
+
+
+def getMostImportantEmail():
+    print 'getting most important email'
+    mostImportant = prioritizedEmails.get()
+    print 'has most important email.'
+    print 'most important: ', mostImportant
 
 
 if __name__=='__main__':
@@ -122,6 +134,7 @@ if __name__=='__main__':
     saveTrainingDataFile = 'trainingData'
     exampleInputMessage = 'Hi, its mom. I love you.'
     saveTrainingData(saveTrainingDataFile)
-    print 'saved ', loadTrainingData(saveTrainingDataFile,exampleInputMessage)
-#    pprint.pprint(type(makeTrainingVector()[0]))
-#    print processNewEmail(exampleInputMessage)
+    print 'New Message 1: ', prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
+    getMostImportantEmail()
+
+
