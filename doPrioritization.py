@@ -35,7 +35,7 @@ class Message():
         subjectivities = []
         for messageGroup in messages:
             messageBody=messageGroup[1]
-            subjectivity = getSentiment(messageBody)
+            subjectivity = self.getSentiment(messageBody)
             subjectivities.append(subjectivity)
         return np.array(subjectivities)
         
@@ -68,29 +68,29 @@ class Message():
         lengths = []
         for messageGroup in messages:
             messageBody=messageGroup[1]
-            lengths.append(getLength(messageBody))
+            lengths.append(self.getLength(messageBody))
         return np.array(lengths)
         
         
     def makeTrainingVector(self):
-        lengths = getLengths()
-        tones = getTones()
-        subjectivities = getSubjectivities()
+        lengths = self.getLengths()
+        tones = self.getTones()
+        subjectivities = self.getSubjectivities()
         trainingVector = zip(lengths, tones, subjectivities)
         return trainingVector
 
     def processNewEmail(self, email):
         email = "The cat is new and really cool. Im enjoying her. Love, Mom."
-        length = getLength(email)
-        tone = getTone(email)
-        subjectivity = getSentiment(email)
+        length = self.getLength(email)
+        tone = self.getTone(email)
+        subjectivity = self.getSentiment(email)
         trainingVector = (length, tone, subjectivity)
         return trainingVector
 
         
     def runAIFitting(self):
-        trainingVector = makeTrainingVector()
-        importances = getImportances()
+        trainingVector = self.makeTrainingVector()
+        importances = self.getImportances()
         C = 1.0  # SVM regularization parameter
     #    clf = sklearn.linear_model.Ridge(alpha=1.0)
         trainingVector = np.array(trainingVector)
@@ -102,8 +102,8 @@ class Message():
     def runSVM(self):
         X = [[0, 0], [1, 1]]
         y = [0, 1]
-        trainingVector = makeTrainingVector()
-        importances = getImportances()
+        trainingVector = self.makeTrainingVector()
+        importances = self.getImportances()
         clf = svm.SVC()
         clf.fit(trainingVector, importances)  
         trainingDataFound = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0, degree=3,
@@ -113,7 +113,7 @@ class Message():
         
         
     def saveTrainingData(self, saveTrainingDataFile):
-        trainingDataFound = runSVM()
+        trainingDataFound = self.runSVM()
         with open(saveTrainingDataFile, 'w') as f:
             pickle.dump(trainingDataFound, f)
                 
@@ -122,7 +122,7 @@ class Message():
         global prioritizedEmails
         with open(saveTrainingDataFile, 'r') as f:
             clf = pickle.load(f)
-        tupleMessageData=processNewEmail(exampleInputMessage)
+        tupleMessageData=self.processNewEmail(exampleInputMessage)
         importanceMessage = -1*clf.predict(tupleMessageData)
         prioritizedEmails.put( (importanceMessage, exampleInputMessage)) 
         print prioritizedEmails.get()
@@ -151,11 +151,11 @@ class text(Message):
 if __name__=='__main__':
 #    runSVM()
     message = Message()
-    message.saveTrainingData(saveTrainingDataFile)
     saveTrainingDataFile = 'trainingData'
+    message.saveTrainingData(saveTrainingDataFile)
     exampleInputMessage = 'Hi, its mom. I love you.'
-    Message.saveTrainingData(saveTrainingDataFile)
-    print 'New Message 1: ', prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
-    getMostImportantEmail()
+    message.saveTrainingData(saveTrainingDataFile)
+    print 'New Message 1: ', message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
+    message.getMostImportantEmail()
 
 
