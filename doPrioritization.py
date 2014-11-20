@@ -19,14 +19,14 @@ prioritizedEmails = Queue.PriorityQueue()
 class Message():
     def __init__(self):
         print 'init function ran'
-        Message=Message()
+#        Message=Message()
     
     def getTones(self):
         '''Find the tone of all messages. '''
         tones = []
         for messageGroup in messages:
             messageBody=messageGroup[1]
-            tone = getTone(messageBody)
+            tone = self.getTone(messageBody)
             tones.append(tone)
         return np.array(tones)
 
@@ -150,6 +150,8 @@ class text(Message):
 
 if __name__=='__main__':
 #    runSVM()
+    message = Message()
+    message.saveTrainingData(saveTrainingDataFile)
     saveTrainingDataFile = 'trainingData'
     exampleInputMessage = 'Hi, its mom. I love you.'
     Message.saveTrainingData(saveTrainingDataFile)
