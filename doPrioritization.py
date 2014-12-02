@@ -80,7 +80,6 @@ class Message():
         return trainingVector
 
     def processNewEmail(self, email):
-        email = "The cat is new and really cool. Im enjoying her. Love, Mom."
         length = self.getLength(email)
         tone = self.getTone(email)
         subjectivity = self.getSentiment(email)
@@ -100,8 +99,6 @@ class Message():
         return clf
         
     def runSVM(self):
-        X = [[0, 0], [1, 1]]
-        y = [0, 1]
         trainingVector = self.makeTrainingVector()
         importances = self.getImportances()
         clf = svm.SVC()
@@ -124,16 +121,15 @@ class Message():
             clf = pickle.load(f)
         tupleMessageData=self.processNewEmail(exampleInputMessage)
         importanceMessage = -1*clf.predict(tupleMessageData)
+#        print '\nimportance of a message: ', importanceMessage, '\n'
         prioritizedEmails.put( (importanceMessage, exampleInputMessage)) 
-        print prioritizedEmails.get()
+#        print prioritizedEmails.get()
         return prioritizedEmails
 
 
-    def getMostImportantEmail():
-        print 'getting most important email'
-    #    mostImportant = prioritizedEmails.get()
-        print 'has most important email.'
-    #    print 'most important: ', mostImportant
+    def getMostImportantEmail(self):
+        mostImportant = prioritizedEmails.get()
+        print 'most important: ', mostImportant
     
     
 class email(Message):
@@ -154,8 +150,13 @@ if __name__=='__main__':
     saveTrainingDataFile = 'trainingData'
     message.saveTrainingData(saveTrainingDataFile)
     exampleInputMessage = 'Hi, its mom. I love you.'
+    empty = ' '
+    
     message.saveTrainingData(saveTrainingDataFile)
-    print 'New Message 1: ', message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
+    
+    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
+    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage2())
+    message.prioritizeSingleEmail(saveTrainingDataFile, exampleInputMessage)
     message.getMostImportantEmail()
 
 
