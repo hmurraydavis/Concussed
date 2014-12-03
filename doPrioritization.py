@@ -20,6 +20,12 @@ class Message():
     def __init__(self):
         print 'init function ran'
 #        Message=Message()
+
+    def anounceMessage(self, messageType):
+        anouncement = 'You have a new %(messageType)s'% \
+        {"messageType": messageType}
+        print anouncement
+    
     
     def getTones(self):
         '''Find the tone of all messages. '''
@@ -133,6 +139,7 @@ class Message():
     
     
 class email(Message):
+    messageType = 'email'
     def __init__():
         return
         
@@ -147,16 +154,17 @@ class text(Message):
 if __name__=='__main__':
 #    runSVM()
     message = Message()
-    saveTrainingDataFile = 'trainingData'
-    message.saveTrainingData(saveTrainingDataFile)
-    exampleInputMessage = 'Hi, its mom. I love you.'
-    empty = ' '
-    
-    message.saveTrainingData(saveTrainingDataFile)
-    
-    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
-    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage2())
-    message.prioritizeSingleEmail(saveTrainingDataFile, exampleInputMessage)
-    message.getMostImportantEmail()
+#    saveTrainingDataFile = 'trainingData'
+#    message.saveTrainingData(saveTrainingDataFile)
+#    exampleInputMessage = 'Hi, its mom. I love you.'
+#    empty = ' '
+#    
+#    message.saveTrainingData(saveTrainingDataFile)
+#    
+#    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
+#    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage2())
+#    message.prioritizeSingleEmail(saveTrainingDataFile, exampleInputMessage)
+#    message.getMostImportantEmail()
+    message.anounceMessage('email')
 
 
