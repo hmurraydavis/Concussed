@@ -10,6 +10,7 @@ import sklearn.svm
 import pickle
 import pprint
 import Queue
+import os
 #from doPrioritization import Message
 
 messages=ms.getMessages()
@@ -24,7 +25,7 @@ class Message():
     def anounceMessage(self, messageType):
         anouncement = 'You have a new %(messageType)s'% \
         {"messageType": messageType}
-        print anouncement
+        os.system('espeak -v en-rp "%(anouncement)s"'%{"anouncement":anouncement})
     
     
     def getTones(self):
