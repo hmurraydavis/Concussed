@@ -22,7 +22,7 @@ class Message():
         print 'init function ran'
 #        Message=Message()
 
-    def anounceMessage(self, messageType):
+    def anounceMessagePresence(self, messageType):
         anouncement = 'You have a new %(messageType)s'% \
         {"messageType": messageType}
         os.system('espeak -v en-rp "%(anouncement)s"'%{"anouncement":anouncement})
@@ -166,6 +166,6 @@ if __name__=='__main__':
 #    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage2())
 #    message.prioritizeSingleEmail(saveTrainingDataFile, exampleInputMessage)
 #    message.getMostImportantEmail()
-    message.anounceMessage('email')
+    message.anounceMessagePresence('email')
 
 
