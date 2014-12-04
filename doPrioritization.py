@@ -129,14 +129,14 @@ class Message():
             pickle.dump(trainingDataFound, f)
                 
 
-    def prioritizeSingleEmail(self, saveTrainingDataFile,exampleInputMessage):
+    def prioritizeSingleEmail(self, saveTrainingDataFile, exampleInputMessage, sender, UID):
         global prioritizedEmails
         with open(saveTrainingDataFile, 'r') as f:
             clf = pickle.load(f)
         tupleMessageData=self.processNewEmail(exampleInputMessage)
         importanceMessage = -1*clf.predict(tupleMessageData)
 #        print '\nimportance of a message: ', importanceMessage, '\n'
-        prioritizedEmails.put( (importanceMessage, exampleInputMessage)) 
+        prioritizedEmails.put( (importanceMessage, exampleInputMessage, sender, UID)) 
 #        print prioritizedEmails.get()
         return prioritizedEmails
 
@@ -158,11 +158,10 @@ class Email(Message):
         password = password.read()
         self.mail.login("messagespectrum@gmail.com", password)
         self.mail.select("inbox") # connect to inboxself.
-        print self.get_mail()
+        #print self.get_mail()
         
     
     def getUnreadEmail(self):
-        print 'get unred email finc ran'
         result, data = self.mail.uid('search', None, 'UNSEEN')
         uid_list = data[0]#.split()
         for messageID in uid_list:
@@ -170,27 +169,42 @@ class Email(Message):
         return uid_list
     
      
-    def get_mail(self): 
-        result, data = self.mail.uid('search', None, 'UNSEEN')
-        uid_list = data[0].split()
-        print len(uid_list), 'Unseen emails.'
+    def get_message_body(self, messageID): 
+###        result, data = self.mail.uid('search', None, 'UNSEEN')
+###        uid_list = data[0].split()
+###        print len(uid_list), 'Unseen emails.'
      
         mails = []
-     
-        for messageID in uid_list:
-            print 'message ID is: ', messageID
-            result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
-            raw_email = data[0][1] # here's the body, which is raw text of the whole email
-            #print raw_email
-            email_message = email.message_from_string(raw_email)
-     
-            bodytext=email_message.get_payload()[0].get_payload()
-            if type(bodytext) is list:
-                bodytext=','.join(str(v) for v in bodytext)
+        
+        result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
+        raw_email = data[0][1] # here's the body, which is raw text of the whole email
+        #print raw_email
+        email_message = email.message_from_string(raw_email)
+ 
+        bodytext=email_message.get_payload()[0].get_payload()
+        if type(bodytext) is list:
+            bodytext=','.join(str(v) for v in bodytext)
      
             mails.append({'from': email_message['From'], 'body': bodytext})
      
-        return mails
+        return bodytext
+        
+        
+    def get_sender(self, messageID):
+        mails = []
+        
+        result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
+        raw_email = data[0][1] # here's the body, which is raw text of the whole email
+        #print raw_email
+        email_message = email.message_from_string(raw_email)
+ 
+        bodytext=email_message.get_payload()[0].get_payload()
+        if type(bodytext) is list:
+            bodytext=','.join(str(v) for v in bodytext)
+     
+            mails.append({'from': email_message['From'], 'body': bodytext})
+     
+        return mails['from']
      
     
         
@@ -206,7 +220,8 @@ if __name__=='__main__':
 #    runSVM()
     message = Message()
     Email = Email()
-#    saveTrainingDataFile = 'trainingData'
+    categorizedEmails=set()
+    saveTrainingDataFile = 'trainingData'
 #    message.saveTrainingData(saveTrainingDataFile)
 #    exampleInputMessage = 'Hi, its mom. I love you.'
 #    empty = ' '
@@ -219,12 +234,22 @@ if __name__=='__main__':
 #    message.getMostImportantEmail()
 #    message.anounceMessagePresence('email', 'mom')
 #    message.readMessage("I love you so, so much!")
-    Email.getUnreadEmail()
+    unreadEmail = Email.getUnreadEmail()
+    if len(unreadEmail) > 0: 
+        for UID in unreadEmail:
+            if UID in categorizedEmails:
+                pass
+            else: 
+                message_body = Email.get_message_body(UID)
+                sender = Email.get_sender
+                message.prioritizeSingleEmail(saveTrainingDataFile, message_body, sender, UID)
+                categorizedEmails.add(UID)
+        mostImpEmail = message.getMostImportantEmail()
+        
 
 ###    testing = True #variable so you don't have to test the whole integrated thing all the time
 ###    timeout = False
 ###    if (testing == True) and (__name__ == '__main__'):
-###        prioritizedEmails=set()
 ###        
         
 ###        while timeout == False:
