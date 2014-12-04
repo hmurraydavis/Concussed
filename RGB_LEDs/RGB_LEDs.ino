@@ -7,9 +7,20 @@
 
 char current_line[16]; // allocate some space for the string
 
-/* RGB LED code taken from a tutorial by cyragia:
+/* RGB LED fading code taken from a tutorial by cyragia:
 http://www.instructables.com/id/Fading-RGB-LED-Arduino/?ALLSTEPS 
 and modified by hmurraydavis */
+
+/*
+Writes color to RGB LEDs
+String format: 
+    n#rrrgggbbb where:
+        n is the character "n" denoting the start of a new string
+        # is the number of the desired chanel
+        rrr is three characters representing the value for the red chanel
+        ggg is three characters representing the value for the green chanel
+        bbb is three characters representing the value for the blue chanel
+*/
 
 void setup() {
 
@@ -72,26 +83,26 @@ int blueV(){
         blueChar[index-start] = current_line[index];
     }
     blueChar[3]='\0';
-    Serial.println("In the blue getting func.");
-    Serial.println(blueChar);
-    Serial.println("current line is: "+String(current_line));
     int blue = atol(blueChar);
-    //Serial.println(blue);
+    Serial.println("Blue value: "+String(blue));
     return blue; 
 }
 
 
+int greenV(){
+    char greenChar[3];
+    int start = 5;
+    for (int index = start; index < start+3; index++){
+        greenChar[index-start] = current_line[index];
+    }
+    greenChar[3]='\0';
+    int green = atol(greenChar);
+    Serial.println("Green value: "+String(green));
+    return green; 
+}
+
+
 void writeColorToLED(int chanel, int redVal, int greenVal, int blueVal) {
-/*
-Writes color to RGB LEDs
-String format: 
-    n#rrrgggbbb where:
-        n is the character "n" denoting the start of a new string
-        # is the number of the desired chanel
-        rrr is three characters representing the value for the red chanel
-        ggg is three characters representing the value for the green chanel
-        bbb is three characters representing the value for the blue chanel
-*/
     analogWrite( GREEN, 255 - greenVal );
     analogWrite( RED, 255 - redVal );
     analogWrite( BLUE, 255 - blueVal );
@@ -107,9 +118,11 @@ void loop() {
     read_line(current_line);
     if (current_line[0]=='n'){
         redValue = redV();
+        greenValue = greenV();
         blueValue = blueV();
+        
     }
-    writeColorToLED(0, redValue, blueValue,100);
+    writeColorToLED(0, redValue, blueValue, greenValue);
   /*
   int redVal = 255;
   int blueVal = 0;
