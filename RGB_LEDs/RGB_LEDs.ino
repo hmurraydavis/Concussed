@@ -30,7 +30,7 @@ void read_line(char *line) {
     // read characters from serial into line until a newline character
     char c;
     int index;
-    for (index = 0; index < 5; index++) {
+    for (index = 0; index < 16; index++) {
         // wait until there is a character
         while (Serial.available() == 0);
         // read a character
@@ -59,14 +59,29 @@ int redV(){
        redChar[index-2] = current_line[index]; 
     }
     redChar[3]='\0';
-    Serial.println("Out of loop: ");
-    Serial.println(redChar);
     int red = atol(redChar); //, NULL, 5);
-    Serial.println(red);
+    Serial.println("Red value: " + String(red));
     return red;
 }
 
-void writeColorToLED(int redVal, int greenVal, int blueVal) {
+
+int blueV(){
+    char blueChar[3];
+    int start = 8;
+    for (int index = start; index < start+3; index++){
+        blueChar[index-start] = current_line[index];
+    }
+    blueChar[3]='\0';
+    Serial.println("In the blue getting func.");
+    Serial.println(blueChar);
+    Serial.println("current line is: "+String(current_line));
+    int blue = atol(blueChar);
+    //Serial.println(blue);
+    return blue; 
+}
+
+
+void writeColorToLED(int chanel, int redVal, int greenVal, int blueVal) {
 /*
 Writes color to RGB LEDs
 String format: 
@@ -86,11 +101,15 @@ String format:
  
 void loop() {
 
+    int redValue;
+    int blueValue;
+    int greenValue;
     read_line(current_line);
     if (current_line[0]=='n'){
-        int red = redV();
+        redValue = redV();
+        blueValue = blueV();
     }
-    writeColorToLED(red,100,100);
+    writeColorToLED(0, redValue, blueValue,100);
   /*
   int redVal = 255;
   int blueVal = 0;
