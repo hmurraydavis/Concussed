@@ -54,20 +54,19 @@ int get_amount(char *line) {
 
 
 int redV(){
-    char redChar[4];
-    for (int index = 1; index < 3; index++) {
-       redChar[index-1] = current_line[index]; 
-//       Serial.print("red char");   
+    char redChar[3];
+    for (int index = 2; index < 5; index++) {
+       redChar[index-2] = current_line[index]; 
     }
+    redChar[3]='\0';
     Serial.println("Out of loop: ");
     Serial.println(redChar);
-    redChar[3]='\0';
-    int red = (int) strtol(redChar, NULL, 3);
+    int red = atol(redChar); //, NULL, 5);
     Serial.println(red);
     return red;
 }
 
-void writeColorToLED() {
+void writeColorToLED(int redVal, int greenVal, int blueVal) {
 /*
 Writes color to RGB LEDs
 String format: 
@@ -78,7 +77,9 @@ String format:
         ggg is three characters representing the value for the green chanel
         bbb is three characters representing the value for the blue chanel
 */
-
+    analogWrite( GREEN, 255 - greenVal );
+    analogWrite( RED, 255 - redVal );
+    analogWrite( BLUE, 255 - blueVal );
 }
 
 
@@ -89,6 +90,7 @@ void loop() {
     if (current_line[0]=='n'){
         redV();
     }
+    writeColorToLED(100,100,100);
   /*
   int redVal = 255;
   int blueVal = 0;
