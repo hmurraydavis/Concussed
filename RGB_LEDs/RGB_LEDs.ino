@@ -88,9 +88,9 @@ void loop() {
 
     read_line(current_line);
     if (current_line[0]=='n'){
-        redV();
+        int red = redV();
     }
-    writeColorToLED(100,100,100);
+    writeColorToLED(red,100,100);
   /*
   int redVal = 255;
   int blueVal = 0;
