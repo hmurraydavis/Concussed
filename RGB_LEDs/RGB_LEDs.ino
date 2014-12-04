@@ -52,11 +52,15 @@ int get_amount(char *line) {
 }
 
 
-int redV(serialString){
-    serialString = String(serialString);
-    redValue=serialString.substring(1,3);
-    Serial.println("red value is: " + String(redValue));
-    return redValue;
+int redV(){
+    char redChar[4];
+    for (int index = 1; index < 3; index++) {
+       redChar[index] = current_line[index];     
+    }
+    redChar[3]='\0';
+    int red = (int) strtol(redChar, NULL, 3);
+    Serial.println(red);
+    return red;
 }
 
 void writeColorToLED() {
@@ -79,7 +83,7 @@ void loop() {
 
     read_line(current_line);
     if (current_line[0]=='n'){
-        redV(current_line);
+        redV();
     }
   /*
   int redVal = 255;
