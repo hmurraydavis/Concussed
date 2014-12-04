@@ -25,10 +25,14 @@ class Message():
         print 'init function ran'
 #        Message=Message()
 
-    def anounceMessagePresence(self, messageType):
-        anouncement = 'You have a new %(messageType)s'% \
-        {"messageType": messageType}
+    def anounceMessagePresence(self, messageType, sender):
+        anouncement = 'You have a new %(messageType)s from %(sender)s'% \
+        {"messageType": messageType, "sender":sender}
         os.system('espeak -v en-rp "%(anouncement)s"'%{"anouncement":anouncement})
+        
+        
+    def readMessage(self, messageBody):
+        os.system('espeak -v en-rp "%(messageBody)s"'%{"messageBody":messageBody})
     
     
     def getTones(self):
@@ -145,7 +149,6 @@ class Message():
 class Email(Message):
 
     messageType = 'email'
-#    mail = None #attribut should be here
     
     def __init__(self):
         imap_host = 'imap.gmail.com'
@@ -153,12 +156,21 @@ class Email(Message):
         print self.mail
         password = open('password.txt','r')
         password = password.read()
-        self.mail.login("messagespectrum@gmail.com", password) #this mail object needs to go int my get mail finction
+        self.mail.login("messagespectrum@gmail.com", password)
         self.mail.select("inbox") # connect to inboxself.
         print self.get_mail()
         
+    
+    def getUnreadEmail(self):
+        print 'get unred email finc ran'
+        result, data = self.mail.uid('search', None, 'UNSEEN')
+        uid_list = data[0]#.split()
+        for messageID in uid_list:
+            print 'uid list is:', messageID
+        return uid_list
+    
      
-    def get_mail(self): #mail object/attribute needs to go poof from the comment above into this function
+    def get_mail(self): 
         result, data = self.mail.uid('search', None, 'UNSEEN')
         uid_list = data[0].split()
         print len(uid_list), 'Unseen emails.'
@@ -166,6 +178,7 @@ class Email(Message):
         mails = []
      
         for messageID in uid_list:
+            print 'message ID is: ', messageID
             result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
             raw_email = data[0][1] # here's the body, which is raw text of the whole email
             #print raw_email
@@ -204,6 +217,19 @@ if __name__=='__main__':
 #    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage2())
 #    message.prioritizeSingleEmail(saveTrainingDataFile, exampleInputMessage)
 #    message.getMostImportantEmail()
-    message.anounceMessagePresence('email')
+#    message.anounceMessagePresence('email', 'mom')
+#    message.readMessage("I love you so, so much!")
+    Email.getUnreadEmail()
+
+###    testing = True #variable so you don't have to test the whole integrated thing all the time
+###    timeout = False
+###    if (testing == True) and (__name__ == '__main__'):
+###        prioritizedEmails=set()
+###        
+        
+###        while timeout == False:
+###            
+###            timeout == True
+        
 
 
