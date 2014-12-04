@@ -23,6 +23,7 @@ void setup() {
   int redVal;
   int blueVal;
   int greenVal;
+  Serial.begin(9600);
 }
 
 void read_line(char *line) {
@@ -55,8 +56,11 @@ int get_amount(char *line) {
 int redV(){
     char redChar[4];
     for (int index = 1; index < 3; index++) {
-       redChar[index] = current_line[index];     
+       redChar[index-1] = current_line[index]; 
+//       Serial.print("red char");   
     }
+    Serial.println("Out of loop: ");
+    Serial.println(redChar);
     redChar[3]='\0';
     int red = (int) strtol(redChar, NULL, 3);
     Serial.println(red);
