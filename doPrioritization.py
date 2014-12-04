@@ -15,6 +15,7 @@ import imaplib, re
 import time
 import socket
 import email
+import serial
 
 messages=ms.getMessages()
 prioritizedEmails = Queue.PriorityQueue()
@@ -204,7 +205,7 @@ class Email(Message):
      
             mails.append({'from': email_message['From'], 'body': bodytext})
      
-        return mails['from']
+        return email_message['From']
      
     
         
@@ -222,6 +223,13 @@ if __name__=='__main__':
     Email = Email()
     categorizedEmails=set()
     saveTrainingDataFile = 'trainingData'
+    #Arduino serial connection
+    arduino=serial.Serial('/dev/ttyACM0') #uncomment when arduino is connected
+    senderLEDvalues = {'hmurraydavis':'200000200', 
+                       'kragniz':'000222000', 
+                       'halieOlin':'100100000',
+                       'mollysails':'000000222'}
+	
 #    message.saveTrainingData(saveTrainingDataFile)
 #    exampleInputMessage = 'Hi, its mom. I love you.'
 #    empty = ' '
@@ -234,17 +242,32 @@ if __name__=='__main__':
 #    message.getMostImportantEmail()
 #    message.anounceMessagePresence('email', 'mom')
 #    message.readMessage("I love you so, so much!")
-    unreadEmail = Email.getUnreadEmail()
-    if len(unreadEmail) > 0: 
-        for UID in unreadEmail:
-            if UID in categorizedEmails:
-                pass
-            else: 
-                message_body = Email.get_message_body(UID)
-                sender = Email.get_sender
-                message.prioritizeSingleEmail(saveTrainingDataFile, message_body, sender, UID)
-                categorizedEmails.add(UID)
-        mostImpEmail = message.getMostImportantEmail()
+    while True:
+        print 'looking for messages!'
+        unreadEmail = Email.getUnreadEmail()
+        if len(unreadEmail) > 0: 
+            for UID in unreadEmail:
+                if UID in categorizedEmails:
+                    pass
+                else: 
+                    message_body = Email.get_message_body(UID)
+                    sender = Email.get_sender(UID)
+                    message.prioritizeSingleEmail(saveTrainingDataFile, message_body, sender, UID)
+                    categorizedEmails.add(UID)
+            mostImpEmail = message.getMostImportantEmail()
+            defaultEmailLEDColor = '222000000'
+            send = 'n0'+defaultEmailLEDColor
+            if 'hmurraydavis' in sender:
+                send = 'n0'+senderLEDvalues['hmurraydavis']
+            elif 'halie.murray-davis' in sender:
+                send = 'n0'+senderLEDvalues['halieOlin']
+            elif 'kragniz' in sender:
+                send = 'n0' + senderLEDvalues['kragniz']
+            elif 'mollysails' in sender:
+                send = 'n0'+senderLEDvalues['mollysails']
+            arduino.write(send+'\n')
+            print 'sent statement was: ', send+'\n'
+            
         
 
 ###    testing = True #variable so you don't have to test the whole integrated thing all the time
