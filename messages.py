@@ -29,3 +29,14 @@ def getMessages():
         ("Today's Meeting","Sorry for the short notice, but I can't make today's meeting as I have a 2:30 flight to catch. Heading to New York for an alumni reception for the National Academy Foundation - naf.org/alumni<http://naf.org/alumni>.  Sorry again for the short notice!",[3,3,3,4])    
     ]
     return messages
+    
+    
+def newMessage1():
+    newMessage = 'I love you, dear. Hope you are having a great day. Love, Mommy.'
+    return newMessage
+    
+    
+def newMessage2():
+    newMessage = 'You are a jerk! I dont like you. Go away.'
+    newMessage = "Sorry for the short notice, but I can't make today's meeting as I have a 2:30 flight to catch. Heading to New York for an alumni reception for the National Academy Foundation - naf.org/alumni<http://naf.org/alumni>.  Sorry again for the short notice!"
+    return newMessage
