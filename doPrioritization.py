@@ -16,6 +16,7 @@ import time
 import socket
 import email
 import serial
+import smtplib
 
 messages=ms.getMessages()
 prioritizedEmails = Queue.PriorityQueue()
@@ -175,38 +176,73 @@ class Email(Message):
 ###        uid_list = data[0].split()
 ###        print len(uid_list), 'Unseen emails.'
      
-        mails = []
-        
-        result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
-        raw_email = data[0][1] # here's the body, which is raw text of the whole email
-        #print raw_email
-        email_message = email.message_from_string(raw_email)
- 
-        bodytext=email_message.get_payload()[0].get_payload()
-        if type(bodytext) is list:
-            bodytext=','.join(str(v) for v in bodytext)
+#######        mails = []
+#######        
+#######        result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
+#######        raw_email = data[0][1] # here's the body, which is raw text of the whole email
+#######        #print raw_email
+#######        email_message = email.message_from_string(raw_email)
+####### 
+#######        bodytext=email_message.get_payload()[0].get_payload()
+#######        if type(bodytext) is list:
+#######            bodytext=','.join(str(v) for v in bodytext)
+#######     
+#######            mails.append({'from': email_message['From'], 'body': bodytext})
      
-            mails.append({'from': email_message['From'], 'body': bodytext})
-     
-        return bodytext
+        return "Hi, I hope you are doing well! Love, Mom."#TODO: uncomment  bodytext
         
         
     def get_sender(self, messageID):
         mails = []
         
-        result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
-        raw_email = data[0][1] # here's the body, which is raw text of the whole email
-        #print raw_email
-        email_message = email.message_from_string(raw_email)
- 
-        bodytext=email_message.get_payload()[0].get_payload()
-        if type(bodytext) is list:
-            bodytext=','.join(str(v) for v in bodytext)
+#######        result, data = self.mail.fetch(messageID, "(RFC822)") # fetch the email body (RFC822) for the given ID
+#######        raw_email = data[0][1] # here's the body, which is raw text of the whole email
+#######        #print raw_email
+#######        email_message = email.message_from_string(raw_email)
+####### 
+#######        bodytext=email_message.get_payload()[0].get_payload()
+#######        if type(bodytext) is list:
+#######            bodytext=','.join(str(v) for v in bodytext)
+#######     
+#######            mails.append({'from': email_message['From'], 'body': bodytext})
      
-            mails.append({'from': email_message['From'], 'body': bodytext})
-     
-        return email_message['From']
-     
+        return 'hmurraydavis' #TODO: uncomment:  email_message['From']
+##        
+##    def sendResponseGMAIL(self):
+##        sender = 'messagespectrum@gmail.com'
+##        receivers = ['hmurraydavis@gmail.com']
+
+##        message = """From: From Person <from@fromdomain.com>
+##        To: To Person <to@todomain.com>
+##        Subject: SMTP e-mail test
+
+##        This is a test e-mail message.
+##        """
+
+##        try:
+##           smtpObj = smtplib.SMTP('localhost')
+##           smtpObj.sendmail(sender, receivers, message)         
+##           print "Successfully sent email"
+##        except SMTPException:
+##           print "Error: unable to send email"
+##     
+    def sendResponse(self, receivers, msg):
+        fromaddr = 'messagespectrum@gmail.com'
+        toaddrs  = 'hmurraydavis@gmail.com'
+        msg = 'There was a terrible error that occured and I wanted you to know!'
+
+
+        # Credentials (if needed)
+        username = 'messagespectrum@gmail.com'
+        password = open('password.txt','r')
+        password = password.read()
+
+        # The actual mail send
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.starttls()
+        server.login(username,password)
+        server.sendmail(fromaddr, toaddrs, msg)
+        server.quit()
     
         
 class faceBook(Message):
@@ -220,41 +256,40 @@ class text(Message):
 if __name__=='__main__':
 #    runSVM()
     message = Message()
-    Email = Email()
+    print 'initilized message class'
+    Email = Email() 
+    print 'intialized email class'
     categorizedEmails=set()
     saveTrainingDataFile = 'trainingData'
     #Arduino serial connection
-    arduino=serial.Serial('/dev/ttyACM0') #uncomment when arduino is connected
+    arduino=serial.Serial('/dev/ttyACM1') #uncomment when arduino is connected
     senderLEDvalues = {'hmurraydavis':'200000200', 
                        'kragniz':'000222000', 
                        'halieOlin':'100100000',
                        'mollysails':'000000222'}
-	
-#    message.saveTrainingData(saveTrainingDataFile)
-#    exampleInputMessage = 'Hi, its mom. I love you.'
-#    empty = ' '
-#    
-#    message.saveTrainingData(saveTrainingDataFile)
-#    
-#    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage1())
-#    message.prioritizeSingleEmail(saveTrainingDataFile, ms.newMessage2())
-#    message.prioritizeSingleEmail(saveTrainingDataFile, exampleInputMessage)
-#    message.getMostImportantEmail()
-#    message.anounceMessagePresence('email', 'mom')
-#    message.readMessage("I love you so, so much!")
+                       
+###    Email.sendResponse()
+##    print ('\n')
+    print message.prioritizeSingleEmail(saveTrainingDataFile, Email.get_message_body(4), Email.get_sender(4), 4)
+##    print ('\n')                   
+
     while True:
-        print 'looking for messages!'
         unreadEmail = Email.getUnreadEmail()
+        #print 'unread emails : ', unreadEmail
         if len(unreadEmail) > 0: 
             for UID in unreadEmail:
                 if UID in categorizedEmails:
                     pass
                 else: 
+                    print 'uid is: ', UID
+                    
                     message_body = Email.get_message_body(UID)
+                    print 'message body: ', message_body
                     sender = Email.get_sender(UID)
                     message.prioritizeSingleEmail(saveTrainingDataFile, message_body, sender, UID)
                     categorizedEmails.add(UID)
             mostImpEmail = message.getMostImportantEmail()
+            print '\n'
             defaultEmailLEDColor = '222000000'
             send = 'n0'+defaultEmailLEDColor
             if 'hmurraydavis' in sender:
@@ -265,19 +300,8 @@ if __name__=='__main__':
                 send = 'n0' + senderLEDvalues['kragniz']
             elif 'mollysails' in sender:
                 send = 'n0'+senderLEDvalues['mollysails']
+                
+            
             arduino.write(send+'\n')
             print 'sent statement was: ', send+'\n'
-            
-        
-
-###    testing = True #variable so you don't have to test the whole integrated thing all the time
-###    timeout = False
-###    if (testing == True) and (__name__ == '__main__'):
-###        
-        
-###        while timeout == False:
-###            
-###            timeout == True
-        
-
 
